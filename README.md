@@ -46,6 +46,6 @@ npm run dev
 
 Running Tests:
 
-From the server directory:  npx vitest index.test.js
+From the server directory:  npx vitest api.test.js
 
 From the client directory:  npm run test:run

@@ -34,7 +34,7 @@ export default function ResortMap() {
   }, []);
 
   function refreshBookedCabanas() {
-    fetch(`/api/bookings/booked`)
+    fetch("/api/bookings/booked")
       .then((res) => res.json())
       .then((data) => {
         setBookedCabanas(new Set(data.bookedCabanas));
@@ -42,7 +42,7 @@ export default function ResortMap() {
   }
 
   useEffect(() => {
-    fetch(`/api/bookings`)
+    fetch("/api/bookings")
       .then((res) => res.json())
       .then((bookings) => {
         setBookings(bookings);
@@ -107,7 +107,6 @@ export default function ResortMap() {
     }
   }
 
-  // 🔥 STATES
   if (loading) return <div>Loading map...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!grid.length) return <div>No map data</div>;
