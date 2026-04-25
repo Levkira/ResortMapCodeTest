@@ -76,7 +76,7 @@ From the server directory:  npx vitest api.test.js
 From the **server directory**:
 
 ```bash
-npx vitest index.test.js
+npx vitest api.test.js
 ```
 
 From the **client directory**:
