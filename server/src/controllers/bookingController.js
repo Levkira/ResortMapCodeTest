@@ -26,11 +26,20 @@ export const getAllBooked = (req, res) => {
 
 export const createBooking = (req, res) => {
   const { cabanaId } = req.params;
+  const { room, name } = req.body;
 
   if (!cabanaId) {
     return res.status(400).json({ error: "cabanaId is required" });
   }
+  if (!room || !name) {
+    return res.status(400).json({ error: "room and name are required" });
+  }
 
-  const updatedList = bookingService.addCabana(cabanaId);
-  res.json({ success: true, bookedCabanas: updatedList });
+  const result = bookingService.bookCabana(cabanaId, room, name);
+
+  if (!result.ok) {
+    return res.status(result.status).json({ error: result.error });
+  }
+
+  res.json({ success: true, bookedCabanas: result.bookedCabanas });
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function BookingModal({
   open,
@@ -9,10 +9,30 @@ export default function BookingModal({
   setRoom,
   setName,
   status,
+  isSubmitting,
   onSubmit,
   onClose,
 }) {
+  useEffect(() => {
+    if (!open) return;
+
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (isSubmitting || !room || !name) return;
+    onSubmit();
+  }
 
   return (
     <div className="booking-modal-overlay" onClick={onClose}>
@@ -34,12 +54,14 @@ export default function BookingModal({
             </button>
           </>
         ) : (
-          <>
+          <form onSubmit={handleSubmit}>
             <input
               placeholder="Room number"
               value={room}
               onChange={(e) => setRoom(e.target.value.trim())}
               className="booking-modal-input"
+              disabled={isSubmitting}
+              autoFocus
             />
 
             <input
@@ -47,23 +69,27 @@ export default function BookingModal({
               value={name}
               onChange={(e) => setName(e.target.value.trim())}
               className="booking-modal-input"
+              disabled={isSubmitting}
             />
 
             <div className="booking-modal-buttons">
               <button
-                onClick={onSubmit}
+                type="submit"
                 className="booking-modal-button booking-modal-button-primary"
+                disabled={isSubmitting || !room || !name}
               >
-                Book
+                {isSubmitting ? "Booking..." : "Book"}
               </button>
               <button
+                type="button"
                 onClick={onClose}
                 className="booking-modal-button booking-modal-button-secondary"
+                disabled={isSubmitting}
               >
                 Cancel
               </button>
             </div>
-          </>
+          </form>
         )}
       </div>
     </div>

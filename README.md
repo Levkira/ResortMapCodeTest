@@ -8,12 +8,11 @@ I opted for a Node.js/Express backend and a React frontend.
 
 ## 📡 API Endpoints
 
-| Method | Endpoint                  | Description                                                  |
-| ------ | ------------------------- | ------------------------------------------------------------ |
-| GET    | `/api`                    | Serves the raw or parsed `map.ascii` layout.                 |
-| GET    | `/api/bookings`           | Serves the guest list and room numbers from `bookings.json`. |
-| GET    | `/api/bookings/booked`    | Returns a list of cabanas that are currently occupied.       |
-| POST   | `/api/bookings/:cabanaId` | Validates guest info and books the specific cabana.          |
+| Method | Endpoint                  | Description                                                                 |
+| ------ | ------------------------- | ---------------------------------------------------------------------------- |
+| GET    | `/api`                    | Serves the raw or parsed `map.ascii` layout.                                |
+| GET    | `/api/bookings/booked`    | Returns a list of cabanas that are currently occupied.                      |
+| POST   | `/api/bookings/:cabanaId` | Validates `{ room, name }` (in request body) against the guest list on the server and books the cabana if it matches. Returns `400` for a missing/invalid room or name, `409` if the cabana is already booked. |
 
 ---
 
@@ -35,7 +34,7 @@ Click any cabana with a green overlay on the map.
 **Validation:**
 The system requires a **Guest Name** and **Room Number**.
 
-The backend checks these against the guest list retrieved from `/api/bookings`.
+These are sent to the backend as part of the booking request, and validated server-side against the guest list. This keeps guest data off the client and prevents booking attempts from bypassing validation.
 
 **Real-Time Update:**
 Once the POST request is successful, the cabana status is updated in memory.

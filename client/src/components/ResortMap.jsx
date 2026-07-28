@@ -12,10 +12,10 @@ export default function ResortMap() {
   const [selectedCabana, setSelectedCabana] = useState(null);
   const [room, setRoom] = useState("");
   const [name, setName] = useState("");
-  const [bookings, setBookings] = useState([]);
   const [bookedCabanas, setBookedCabanas] = useState(new Set());
   const [bookingError, setBookingError] = useState(null);
   const [bookingStatus, setBookingStatus] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetch("/api")
@@ -42,11 +42,6 @@ export default function ResortMap() {
   }
 
   useEffect(() => {
-    fetch("/api/bookings")
-      .then((res) => res.json())
-      .then((bookings) => {
-        setBookings(bookings);
-      });
     refreshBookedCabanas();
   }, []);
 
@@ -63,29 +58,31 @@ export default function ResortMap() {
   }, [grid]);
 
   function submitBooking() {
-    const booking = bookings.find(
-      (b) => b.room === room && b.guestName === name,
-    );
-
-    if (!booking) {
-      setBookingError("Invalid room or guest name");
-      return;
-    }
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     fetch(`/api/bookings/${selectedCabana}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cabana: selectedCabana }),
+      body: JSON.stringify({ room, name }),
     })
-      .then((res) => res.json())
-      .then(() => {
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          setBookingError(data.error || "Booking failed");
+          return;
+        }
         setBookingStatus("success");
         setBookingError(null);
-        getOverlayStyle("unavailable");
+        refreshBookedCabanas();
       })
-      .catch((err) => console.error("Booking failed", err));
-
-    refreshBookedCabanas();
+      .catch((err) => {
+        console.error("Booking failed", err);
+        setBookingError("Something went wrong. Please try again.");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   }
 
   function closeModal() {
@@ -94,8 +91,8 @@ export default function ResortMap() {
     setName("");
     setBookingStatus(null);
     setBookingError(null);
+    setIsSubmitting(false);
   }
-
   function getOverlayStyle(state) {
     switch (state) {
       case "available":
@@ -211,6 +208,7 @@ export default function ResortMap() {
               setName={setName}
               error={bookingError}
               status={bookingStatus}
+              isSubmitting={isSubmitting}
               onSubmit={submitBooking}
               onClose={closeModal}
             />
