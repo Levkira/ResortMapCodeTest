@@ -2,8 +2,8 @@
   "name": "fullstack-one-command",
   "version": "1.0.0",
   "workspaces": [
-    "frontend",
-    "backend"
+    "client",
+    "server"
   ],
   "dependencies": {
     "express": "^5.2.1",
@@ -18,7 +18,7 @@
     "vitest": "^1.0.0"
   },
   "scripts": {
-    "server": "nodemon src/server.js",
+    "server": "nodemon server/src/server.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server --\" \"npm run client\"",
     "test": "vitest",
